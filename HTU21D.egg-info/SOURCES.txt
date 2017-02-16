@@ -1,0 +1,8 @@
+setup.py
+HTU21D/HTU21D.py
+HTU21D/__init__.py
+HTU21D.egg-info/PKG-INFO
+HTU21D.egg-info/SOURCES.txt
+HTU21D.egg-info/dependency_links.txt
+HTU21D.egg-info/requires.txt
+HTU21D.egg-info/top_level.txt
