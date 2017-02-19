@@ -106,7 +106,7 @@ class HTU21D(object):
             rh_final = 100.0 if rh_final > 100 else rh_final  # Clamp > 100
             rh_final = 0.0 if rh_final < 0 else rh_final  # Clamp < 0
             self._logger.debug('Calibrated humidity {0} Pa'.format(rh_final))
-            return rh_final
+            return (rh_final, temp_actual)
         else:
             self._logger.debug('Calibrated humidity {0} Pa'.format(-255))
-            return -255
+            return (-255, temp_actual)
