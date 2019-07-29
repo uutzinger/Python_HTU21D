@@ -25,6 +25,6 @@ setup(name              = 'HTU21D',
       license           = 'MIT',
       classifiers       = classifiers,
       url               = 'https://github.com/uutzinger/Python_HTU21D/',
-      dependency_links  = ['https://github.com/adafruit/Adafruit_Python_GPIO/tarball/master#egg=Adafruit-GPIO-0.6.5'],
+      dependency_links  = ['https://github.com/uutzinger/Adafruit_Python_GPIO.git'],
       install_requires  = ['Adafruit-GPIO>=0.6.5'],
       packages          = find_packages())
