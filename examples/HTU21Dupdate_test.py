@@ -10,15 +10,15 @@
 # THE SOFTWARE.
 
 import time
-
 # Can enable debug output by uncommenting:
 import logging
 logging.basicConfig(level=logging.ERROR)
 # Options DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 import HTU21D
-poll_interval = 0.1 # seconds
-loop_interval = 0.001 # seconds
+
+update_interval  = 0.1 # seconds
+display_interval = 0.5 # seconds
 
 # Default constructor will pick a default I2C bus.
 #
@@ -30,24 +30,18 @@ loop_interval = 0.001 # seconds
 #sensor = HTU21D.HTU21D(busnum=2)
 sensor = HTU21D.HTU21D()
 
-lastPoll=time.time()
-previousRateTime=time.time()
-humidityCounter=0
+lastUpdate  = time.time()
+lastDisplay = time.time()
 
 while True:
   currentTime = time.time()
-  if currentTime - lastPoll >= poll_interval :
-    # temperature = sensor.read_temperature()
-    humidity,temperature = sensor.read_humidity()
-    print("Temp: %.2f deg C" % temperature)
-    print("Humid: %.2f %% rH" % humidity)
-    humidityCounter += 1
-  if ((currentTime - previousRateTime) >= 1.0):
-    humidityRate = humidityCounter
-    humidityCounter = 0
-    previousRateTime = currentTime
-    print("Humidity rate: %d" % (humidityRate) ) 
+  if currentTime - lastUpdate >= update_interval :
+    sensor.update()
+    lastUpdate = currentTime
+  if ((currentTime - lastDisplay) >= display_interval):
+    print("Temerature: %.1f deg C" % (sensor.temperature) ) 
+    print("Humidity:   %.1f %% rH" % (sensor.humidity) )
   # release task
-  timeRemaining = loop_interval - (time.time() - currentTime)
+  timeRemaining = display_interval - (time.time() - currentTime)
   if (timeRemaining > 0):
     time.sleep(timeRemaining)

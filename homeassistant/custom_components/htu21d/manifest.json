@@ -1,9 +1,9 @@
 {
   "domain": "htu21d",
-  "name": "Htu21d",
+  "name": "HTU21D",
   "documentation": "https://www.home-assistant.io/components/htu21d",
   "requirements": [
-    "'Adafruit-GPIO>=1.0.4'",
+    "Adafruit_GPIO>=1.0.4",
     "Adafruit_PureIO>=0.2.3"
   ],
   "dependencies": [],
