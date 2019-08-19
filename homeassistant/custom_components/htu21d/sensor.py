@@ -110,7 +110,7 @@ class HTU21DSensor(Entity):
                 if self.unit_of_measurement == TEMP_FAHRENHEIT:
                     value = celsius_to_fahrenheit(value)
             else:
-                value = round(self._client.sensor.relative_humidity, 1)
+                value = round(self._client.sensor.humidity, 1)
             self._state = value
         else:
             _LOGGER.warning("Bad sample")
