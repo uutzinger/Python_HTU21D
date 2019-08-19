@@ -32,7 +32,7 @@ HTU21D_SOFTRESET         = 0xFE # Soft reset
 # device is encapsulated by this class. The device class should be the only value exported
 
 class HTU21D(object):
-    device_name         =_DEFAULT_NAME
+    device_name =_DEFAULT_NAME
     
     # Constructor
     def __init__(self, i2c=None, busnum=None, logger=None, **kwargs):
@@ -46,7 +46,6 @@ class HTU21D(object):
         # default is VDD>2.25, On Chip heater off, OTP reload disabled
         self._temperature = -255
         self._humitidy = -255
-        self._logger = logger
         self._ok = self._soft_reset()
         if self._ok:
             self.update()
@@ -58,7 +57,7 @@ class HTU21D(object):
             return True
         except OSError as exc:
             self.log_error("Bad writing in bus: %s", exc)
-            return Falsex`
+            return False
 
     @staticmethod        
     def _calc_temp(sensor_temp):
@@ -144,12 +143,15 @@ class HTU21D(object):
 
         if self._crc8check(buf_t):
             temp = (buf_t[0] << 8 | buf_t[1]) & 0xFFFC
-            self.log_debug('Raw temp {0} C'.format(temp))
+            self.log_debug('Raw temp {0}'.format(temp))
             self._temperature = self._calc_temp(temp)
+            self.log_debug('Calibrated temp {0} C'.format(self._temperature))
 
             if self._crc8check(buf_h):
                 humid = (buf_h[0] << 8 | buf_h[1]) & 0xFFFC
+                self.log_debug('Raw humidity {0}'.format(humid))
                 rh_actual = self._calc_humid(humid)
+                self.log_debug('Humidity {0} %H'.format(rh_actual))
                 # For temperature coefficient compensation
                 rh_final = self._temp_coefficient(rh_actual, self._temperature)
                 rh_final = 100.0 if rh_final > 100 else rh_final  # Clamp > 100
@@ -174,21 +176,24 @@ class HTU21D(object):
         buf = array.array('B', data)
         if self._crc8check(buf):
             temp = (buf[0] << 8 | buf[1]) & 0xFFFC
-            self.log_debug('Raw temp {0} C'.format(temp))
+            self.log_debug('Raw temp {0}'.format(temp))
             return self._calc_temp(temp)
         else:
-            self.log_debug('Raw temp {0} C'.format(-255))
+            self.log_debug('Raw temp {0}'.format(-255))
             return -255
 
     def read_humidity(self):
         temp_actual = self.read_temperature()  # For temperature coefficient compensation
+        self.log_debug('Calibrated temp {0} C'.format(temp_actual))
         self._device.writeRaw8(HTU21D_READHUMNOHOLD)  # Measure humidity
         time.sleep(.016) # 16ms max for 12bits
         data = self._device.readRawList(3)
         buf = array.array('B', data)
         if self._crc8check(buf):
             humid = (buf[0] << 8 | buf[1]) & 0xFFFC
+            self.log_debug('Raw humidity {0}'.format(humid))
             rh_actual = self._calc_humid(humid)
+            self.log_debug('Humidity {0} %H'.format(rh_actual))
             rh_final = self._temp_coefficient(rh_actual, temp_actual)
             rh_final = 100.0 if rh_final > 100 else rh_final  # Clamp > 100
             rh_final = 0.0 if rh_final < 0 else rh_final  # Clamp < 0

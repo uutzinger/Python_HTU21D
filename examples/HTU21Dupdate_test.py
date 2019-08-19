@@ -12,7 +12,7 @@
 import time
 # Can enable debug output by uncommenting:
 import logging
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 # Options DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 import HTU21D
@@ -28,7 +28,7 @@ display_interval = 0.5 # seconds
 #
 # Optionally you can override the bus number:
 #sensor = HTU21D.HTU21D(busnum=2)
-sensor = HTU21D.HTU21D()
+sensor = HTU21D.HTU21D(logger='HTU21D.sensor')
 
 lastUpdate  = time.time()
 lastDisplay = time.time()

@@ -13,8 +13,9 @@ import time
 
 # Can enable debug output by uncommenting:
 import logging
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig()
 # Options DEBUG, INFO, WARNING, ERROR, CRITICAL
+logging.getLogger().setLevel(logging.DEBUG)
 
 import HTU21D
 poll_interval = 0.1 # seconds
@@ -28,7 +29,7 @@ loop_interval = 0.001 # seconds
 #
 # Optionally you can override the bus number:
 #sensor = HTU21D.HTU21D(busnum=2)
-sensor = HTU21D.HTU21D()
+sensor = HTU21D.HTU21D(logger='HTU21D.sensor')
 
 lastPoll=time.time()
 previousRateTime=time.time()

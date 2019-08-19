@@ -5,12 +5,12 @@ import logging
 
 import voluptuous as vol
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from   homeassistant.components.sensor import PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import CONF_NAME, TEMP_FAHRENHEIT
-from homeassistant.helpers.entity import Entity
-from homeassistant.util import Throttle
-from homeassistant.util.temperature import celsius_to_fahrenheit
+from   homeassistant.const import CONF_NAME, TEMP_FAHRENHEIT
+from   homeassistant.helpers.entity import Entity
+from   homeassistant.util import Throttle
+from   homeassistant.util.temperature import celsius_to_fahrenheit
 
 _LOGGER = logging.getLogger(__name__)
 
