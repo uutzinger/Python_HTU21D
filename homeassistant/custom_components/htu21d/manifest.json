@@ -3,6 +3,7 @@
   "name": "HTU21D",
   "documentation": "https://www.home-assistant.io/components/htu21d",
   "requirements": ["Python_HTU21D>=1.0.0"],
+  "url":           "https://github.com/uutzinger/Python_HTU21D.git",
   "dependencies": [],
   "codeowners": []
 }
