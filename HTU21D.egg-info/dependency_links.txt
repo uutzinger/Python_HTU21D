@@ -1,1 +1,0 @@
-https://github.com/uutzinger/Adafruit_Python_GPIO.git
