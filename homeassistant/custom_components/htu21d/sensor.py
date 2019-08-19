@@ -46,7 +46,7 @@ async def async_setup_platform(hass, config, async_add_entities,
     # bus = smbus.SMBus(config.get(CONF_I2C_BUS))
 
     sensor = await hass.async_add_job(
-        partial(HTU21D, i2c=None, busnum=bus_number, logger=__name__)
+        partial(HTU21D.HTU21D, i2c=None, busnum=bus_number, logger=__name__)
     )
 
     if not sensor.sample_ok:
@@ -110,7 +110,7 @@ class HTU21DSensor(Entity):
                 if self.unit_of_measurement == TEMP_FAHRENHEIT:
                     value = celsius_to_fahrenheit(value)
             else:
-                value = round(self._client.sensor.realtive_humidity, 1)
+                value = round(self._client.sensor.relative_humidity, 1)
             self._state = value
         else:
             _LOGGER.warning("Bad sample")
