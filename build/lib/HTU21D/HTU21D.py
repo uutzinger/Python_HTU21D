@@ -35,7 +35,7 @@ class HTU21D(object):
     device_name         =_DEFAULT_NAME
     
     # Constructor
-    def __init__(self, i2c=None, busnum=None, logger='HTU21D.HTU21D', **kwargs):
+    def __init__(self, i2c=None, busnum=None, logger=None, **kwargs):
         self._logger = logging.getLogger(logger)
         # Create I2C device.
         if i2c is None:
@@ -46,6 +46,7 @@ class HTU21D(object):
         # default is VDD>2.25, On Chip heater off, OTP reload disabled
         self._temperature = -255
         self._humitidy = -255
+        self._logger = logger
         self._ok = self._soft_reset()
         if self._ok:
             self.update()
@@ -56,8 +57,8 @@ class HTU21D(object):
             time.sleep(0.05) # give some time to recover, should take less than 15ms
             return True
         except OSError as exc:
-            self._logger.error("Bad writing in bus: %s", exc)
-            return False
+            self.log_error("Bad writing in bus: %s", exc)
+            return Falsex`
 
     @staticmethod        
     def _calc_temp(sensor_temp):
@@ -100,6 +101,20 @@ class HTU21D(object):
         """Return True for a valid measurement data."""
         return self._ok and self._temperature > -100 and self._humidity > -1
 
+    def log_error(self, msg, *args):
+        """Log an error or print in stdout if no logger."""
+        if self._logger is not None:
+            self._logger.error(msg, *args)
+        else:
+            print(msg % args)
+            
+    def log_debug(self, msg, *args):
+        """Log a debugg msg or print in stdout if no logger."""
+        if self._logger is not None:
+            self._logger.debug(msg, *args)
+        else:
+            print(msg % args)
+
     def dewpoint(self, temp, humid):
         A=8.1332
         B=1762.39
@@ -110,7 +125,7 @@ class HTU21D(object):
     def update(self):
         """Read raw data and calculate temperature and humidity."""
         if not self._ok:
-            self._logger.error("Trying to restore with soft reset")
+            self.log_error("Trying to restore with soft reset")
             self._ok = self._soft_reset()
         try:
             self._device.writeRaw8(HTU21D_READTEMPNOHOLD)  # Measure temp
@@ -124,12 +139,12 @@ class HTU21D(object):
             buf_h = array.array('B', data)
         except OSError as exc:
             self._ok = False
-            self._logger.error("Bad reading: %s", exc)
+            self.log_error("Bad reading: %s", exc)
             return
 
         if self._crc8check(buf_t):
             temp = (buf_t[0] << 8 | buf_t[1]) & 0xFFFC
-            self._logger.debug('Raw temp {0} C'.format(temp))
+            self.log_debug('Raw temp {0} C'.format(temp))
             self._temperature = self._calc_temp(temp)
 
             if self._crc8check(buf_h):
@@ -139,18 +154,18 @@ class HTU21D(object):
                 rh_final = self._temp_coefficient(rh_actual, self._temperature)
                 rh_final = 100.0 if rh_final > 100 else rh_final  # Clamp > 100
                 rh_final = 0.0 if rh_final < 0 else rh_final  # Clamp < 0
-                self._logger.debug('Calibrated humidity {0} %H'.format(rh_final))
+                self.log_debug('Calibrated humidity {0} %H'.format(rh_final))
                 self._humidity = rh_final
             else:
                 self._humidity = -255
                 self._ok = False
-                self._logger.error("Bad CRC error with humidity")
-                self._logger.error('Raw temp {0} C'.format(buf_h))
+                self.log_error("Bad CRC error with humidity")
+                self.log_error('Raw temp {0} C'.format(buf_h))
         else:
             self._temperature = -255
             self._ok = False
-            self._logger.error("Bad CRC error with temperature")
-            self._logger.error('Raw temp {0} C'.format(buf_t))
+            self.log_error("Bad CRC error with temperature")
+            self.log_error('Raw temp {0} C'.format(buf_t))
 
     def read_temperature(self):
         self._device.writeRaw8(HTU21D_READTEMPNOHOLD)  # Measure temp
@@ -159,10 +174,10 @@ class HTU21D(object):
         buf = array.array('B', data)
         if self._crc8check(buf):
             temp = (buf[0] << 8 | buf[1]) & 0xFFFC
-            self._logger.debug('Raw temp {0} C'.format(temp))
+            self.log_debug('Raw temp {0} C'.format(temp))
             return self._calc_temp(temp)
         else:
-            self._logger.debug('Raw temp {0} C'.format(-255))
+            self.log_debug('Raw temp {0} C'.format(-255))
             return -255
 
     def read_humidity(self):
@@ -177,10 +192,10 @@ class HTU21D(object):
             rh_final = self._temp_coefficient(rh_actual, temp_actual)
             rh_final = 100.0 if rh_final > 100 else rh_final  # Clamp > 100
             rh_final = 0.0 if rh_final < 0 else rh_final  # Clamp < 0
-            self._logger.debug('Calibrated humidity {0} %H'.format(rh_final))
+            self.log_debug('Calibrated humidity {0} %H'.format(rh_final))
             return (rh_final, temp_actual)
         else:
-            self._logger.debug('Calibrated humidity {0} %H'.format(-255))
+            self.log_debug('Calibrated humidity {0} %H'.format(-255))
             return (-255, temp_actual)
 
     @property

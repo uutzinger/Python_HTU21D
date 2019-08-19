@@ -2,10 +2,7 @@
   "domain": "htu21d",
   "name": "HTU21D",
   "documentation": "https://www.home-assistant.io/components/htu21d",
-  "requirements": [
-    "Adafruit_GPIO>=1.0.4",
-    "Adafruit_PureIO>=0.2.3"
-  ],
+  "requirements": ["Python_HTU21D>=1.0.0"],
   "dependencies": [],
   "codeowners": []
 }

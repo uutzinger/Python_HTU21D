@@ -46,7 +46,7 @@ async def async_setup_platform(hass, config, async_add_entities,
     # bus = smbus.SMBus(config.get(CONF_I2C_BUS))
 
     sensor = await hass.async_add_job(
-        partial(HTU21D, i2c=None, busnum=bus_numer, logger=_LOGGER)
+        partial(HTU21D, i2c=None, busnum=bus_number, logger=_LOGGER)
     )
 
     if not sensor.sample_ok:
